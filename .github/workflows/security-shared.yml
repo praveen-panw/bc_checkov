@@ -1,22 +1,22 @@
 # !!! Important !!!
-# any change to this workflow will not take into effect on the same PR and only after,
-# because of security implications from target 'pull_request_target'
+# This a reusable workflow and is used in the PR and push to main branch flow separately
+# to be able to protect it behind a manual approval in the PR flow
 
-name: security
+name: security-shared
 
 on:
-  pull_request_target:
-  push:
-    branches:
-      - main
+  workflow_call:
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   bandit:
     runs-on: [self-hosted, public, linux, x64]
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: security test
         uses: jpetrucciani/bandit-check@a3625769b94d074865d7c410b9ba4019b4c80681  # v1
         with:
@@ -25,6 +25,8 @@ jobs:
     runs-on: [self-hosted, public, linux, x64]
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: detect secrets
         uses: edplato/trufflehog-actions-scan@0af17d9dd1410283f740eb76b0b8f6b696cadefc  # v0.9
         with:
@@ -34,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3
         with:
-          ref: ${{ github.event.pull_request.head.sha }}  # this is needed to use the API key in a PR
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Scan for secrets
         uses: bridgecrewio/checkov-action@master  # use latest and greatest
         with:
