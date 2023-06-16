@@ -1,15 +1,15 @@
 import unittest
 from pathlib import Path
 
+from checkov.arm.checks.resource.FrontdoorUseWAFMode import check
+from checkov.arm.runner import Runner
 from checkov.runner_filter import RunnerFilter
-from checkov.terraform.checks.resource.azure.AKSApiServerAuthorizedIpRanges import check
-from checkov.terraform.runner import Runner
 
 
-class TestAKSApiServerAuthorizedIpRanges(unittest.TestCase):
-    def test(self):
+class TestFrontdoorUseWAFMode(unittest.TestCase):
+    def test_summary(self):
         # given
-        test_files_dir = Path(__file__).parent / "example_AKSApiServerAuthorizedIpRanges"
+        test_files_dir = Path(__file__).parent / "example_FrontdoorUseWAFMode"
 
         # when
         report = Runner().run(root_folder=str(test_files_dir), runner_filter=RunnerFilter(checks=[check.id]))
@@ -18,14 +18,10 @@ class TestAKSApiServerAuthorizedIpRanges(unittest.TestCase):
         summary = report.get_summary()
 
         passing_resources = {
-            "azurerm_kubernetes_cluster.enabled",
-            "azurerm_kubernetes_cluster.private",
-            "azurerm_kubernetes_cluster.version_3_39",
+            "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies.pass",
         }
-
         failing_resources = {
-            "azurerm_kubernetes_cluster.default",
-            "azurerm_kubernetes_cluster.empty",
+            "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies.fail",
         }
 
         passed_check_resources = {c.resource for c in report.passed_checks}
