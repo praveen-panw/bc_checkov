@@ -1,0 +1,20 @@
+metadata:
+  # id: "CKV2_AWS_66"
+  id: "PUDXXXXXXXX"
+  name: "Ensure access control lists are disabled"
+  category: "GENERAL_SECURITY"
+
+definition:
+  and:
+    # - cond_type: connection
+    #   resource_types:
+    #     - aws_s3_bucket
+    #   connected_resource_types:
+    #     - aws_s3_bucket_ownership_controls
+    #   operator: exists
+
+    - cond_type: "attribute"
+      resource_types: "aws_s3_bucket_ownership_controls"
+      attribute: "rule.object_ownership"
+      operator: "equals"
+      value: "BucketOwnerEnforced"
